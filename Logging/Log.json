@@ -1,0 +1,38 @@
+{
+  "Serilog": {
+    "MinimumLevel": "Information",
+    "Enrich": [
+      "WithThreadId"
+    ],
+    "Using": {
+      "File": "Serilog.Sinks.File"
+    },
+    "WriteTo": {
+      "MainFileSimple": {
+        "Name": "File",
+        "Args": {
+          "path": "%SERILOG_OUTPUT_PATH%\\ConfigLog-.log",
+          "outputTemplate": "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}",
+          "shared": true,
+          "flushToDiskInterval": "00:00:03",
+          "rollingInterval": "Day",
+          "retainedFileCountLimit": 31
+        }
+      },
+      "MainFile": {
+        "Name": "Logger",
+        "Args:configureLogger:WriteTo:File": {
+          "Name": "File",
+          "Args": {
+            "path": "%SERILOG_OUTPUT_PATH%\\ConfigSub-.log",
+            "outputTemplate": "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}",
+            "shared": true,
+            "flushToDiskInterval": "00:00:03",
+            "rollingInterval": "Day",
+            "retainedFileCountLimit": 31
+          }
+        }
+      }
+    }
+  }
+}

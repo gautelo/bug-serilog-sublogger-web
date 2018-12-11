@@ -9,13 +9,17 @@ namespace MyOrg.Console
     {
         static void Main(string[] args)
         {
-            var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            // SerilogConfig.RegisterByCode(basePath);
-            SerilogConfig.RegisterBySettings(basePath);
+            var binPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var outputPath = Path.Combine(binPath, "..\\..\\Log\\");
+            var configPath = Path.Combine(binPath, "Log.json");
+            // SerilogConfig.RegisterByCode(outputPath);
+            SerilogConfig.RegisterBySettings(outputPath, configPath);
 
             var logger = Log.ForContext<Program>();
 
             logger.Information("Hello");
+
+            Log.CloseAndFlush();
         }
     }
 }

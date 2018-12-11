@@ -7,25 +7,23 @@ namespace MyOrg.Logging
 {
     public static class SerilogConfig
     {
-        public static void RegisterByCode(string basePath)
+        public static void RegisterByCode(string outputPath)
         {
-            var logOutputPath = Path.Combine(basePath, "Log");
 
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(Path.Combine(logOutputPath, "CodeLog-.log"), outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(3), rollingInterval: RollingInterval.Day)
+                .WriteTo.File(Path.Combine(outputPath, "CodeLog-.log"), outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(3), rollingInterval: RollingInterval.Day)
                 .WriteTo.Logger(lc => lc
-                    .WriteTo.File(Path.Combine(logOutputPath, "CodeSub-.log"), outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(3), rollingInterval: RollingInterval.Day));
+                    .WriteTo.File(Path.Combine(outputPath, "CodeSub-.log"), outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} {ThreadId,3} {SourceContext} :> {Message}{NewLine}{Exception}", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(3), rollingInterval: RollingInterval.Day));
 
             Log.Logger = loggerConfiguration.CreateLogger();
         }
 
-        public static void RegisterBySettings(string basePath)
+        public static void RegisterBySettings(string outputPath, string configPath)
         {
-            var logOutputPath = Path.Combine(basePath, "Log");
-            Environment.SetEnvironmentVariable("SERILOG_OUTPUT_PATH", logOutputPath);
+            Environment.SetEnvironmentVariable("SERILOG_OUTPUT_PATH", outputPath);
 
-            var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(basePath, "Log.json")).Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile(configPath).Build();
 
             var loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration);
 
